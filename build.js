@@ -11,7 +11,17 @@ let html = parts.map(name =>
   fs.readFileSync(path.join(__dirname, 'restore', name), 'utf8')
 ).join('');
 
-const doctorPhotoBase64 = fs.readFileSync(path.join(__dirname, 'photo-inline.b64'), 'utf8').trim();
+// Lê diretamente o JPEG binário válido do repositório e converte para Base64 no build.
+// Isso elimina dependência de arquivos Base64 manuais/corrompidos e também evita problema de caminho/cache.
+const doctorPhotoPath = path.join(__dirname, 'assets', 'dr-borba.jpg');
+if (!fs.existsSync(doctorPhotoPath)) {
+  throw new Error('Foto do Dr. Borba não encontrada em assets/dr-borba.jpg');
+}
+const doctorPhotoBuffer = fs.readFileSync(doctorPhotoPath);
+if (doctorPhotoBuffer.length < 4 || doctorPhotoBuffer[0] !== 0xFF || doctorPhotoBuffer[1] !== 0xD8) {
+  throw new Error('assets/dr-borba.jpg não é um JPEG válido');
+}
+const doctorPhotoBase64 = doctorPhotoBuffer.toString('base64');
 html = html.replace('assets/dr-borba.jpg', `data:image/jpeg;base64,${doctorPhotoBase64}`);
 
 const dist = path.join(__dirname, 'dist');
@@ -29,4 +39,4 @@ for (const name of fs.readdirSync(path.join(__dirname, 'assets'))) {
   if (fs.statSync(src).isFile()) fs.copyFileSync(src, dst);
 }
 
-console.log(`Built ${html.length} characters into dist/index.html with embedded Dr. Borba photo`);
+console.log(`Built ${html.length} characters into dist/index.html with embedded Dr. Borba photo from binary JPEG`);
