@@ -26,12 +26,4 @@ for (const name of fs.readdirSync(path.join(__dirname, 'assets'))) {
   if (fs.statSync(src).isFile()) fs.copyFileSync(src, dst);
 }
 
-// Usa diretamente a foto binária válida do repositório e cria um nome versionado
-// para evitar que o cache antigo da Vercel/navegador mantenha a imagem quebrada.
-const doctorPhoto = path.join(__dirname, 'assets', 'dr-borba.jpg');
-if (!fs.existsSync(doctorPhoto)) {
-  throw new Error('Foto do Dr. Borba não encontrada em assets/dr-borba.jpg');
-}
-fs.copyFileSync(doctorPhoto, path.join(dist, 'assets', 'dr-borba-v2.jpg'));
-
-console.log(`Built ${html.length} characters into dist/index.html with valid Dr. Borba photo`);
+console.log(`Built ${html.length} characters into dist/index.html using repository assets directly`);
