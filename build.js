@@ -26,4 +26,13 @@ for (const name of fs.readdirSync(path.join(__dirname, 'assets'))) {
   if (fs.statSync(src).isFile()) fs.copyFileSync(src, dst);
 }
 
-console.log(`Built ${html.length} characters into dist/index.html`);
+const photoParts = ['dr0.txt','dr1.txt','dr2.txt','dr3.txt'];
+const photoBase64 = photoParts.map(name =>
+  fs.readFileSync(path.join(__dirname, 'photo-parts', name), 'utf8').trim()
+).join('');
+fs.writeFileSync(
+  path.join(dist, 'assets', 'dr-borba.jpg'),
+  Buffer.from(photoBase64, 'base64')
+);
+
+console.log(`Built ${html.length} characters into dist/index.html with Dr. Borba photo`);
