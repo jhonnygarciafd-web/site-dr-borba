@@ -7,9 +7,12 @@ const parts = [
   'p20.txt','p21.txt','p22.txt','p23.txt'
 ];
 
-const html = parts.map(name =>
+let html = parts.map(name =>
   fs.readFileSync(path.join(__dirname, 'restore', name), 'utf8')
 ).join('');
+
+const doctorPhotoBase64 = fs.readFileSync(path.join(__dirname, 'photo-inline.b64'), 'utf8').trim();
+html = html.replace('assets/dr-borba.jpg', `data:image/jpeg;base64,${doctorPhotoBase64}`);
 
 const dist = path.join(__dirname, 'dist');
 fs.rmSync(dist, { recursive: true, force: true });
@@ -26,4 +29,4 @@ for (const name of fs.readdirSync(path.join(__dirname, 'assets'))) {
   if (fs.statSync(src).isFile()) fs.copyFileSync(src, dst);
 }
 
-console.log(`Built ${html.length} characters into dist/index.html using repository assets directly`);
+console.log(`Built ${html.length} characters into dist/index.html with embedded Dr. Borba photo`);
